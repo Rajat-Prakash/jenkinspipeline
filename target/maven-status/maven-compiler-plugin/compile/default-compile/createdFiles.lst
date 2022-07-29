@@ -1,0 +1,9 @@
+com\sapient\globalinsurancesbapi\conrtollers\OwnerController.class
+com\sapient\globalinsurancesbapi\configurations\InsuranceSwaggerConfiguration.class
+com\sapient\globalinsurancesbapi\GlobalinsurancesbapiApplication.class
+com\sapient\globalinsurancesbapi\models\College.class
+com\sapient\globalinsurancesbapi\services\CollegeService.class
+com\sapient\globalinsurancesbapi\services\StudentService.class
+com\sapient\globalinsurancesbapi\repositories\CollegeRepository.class
+com\sapient\globalinsurancesbapi\models\Student.class
+com\sapient\globalinsurancesbapi\repositories\StudentRepository.class
