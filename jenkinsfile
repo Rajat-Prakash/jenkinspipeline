@@ -7,11 +7,6 @@ stage('Build')
 steps{
 echo "Building the Project.........."
 }
- mail body: 'project build successful',
-                     from: 'rpdmoacc101@gmail.com',
-                     replyTo: 'rpdmoacc101@gmail.com',
-                     subject: 'project build successful',
-                     to: 'rpdmoacc101@gmail.com'
 }
 stage('Test') 
 {
