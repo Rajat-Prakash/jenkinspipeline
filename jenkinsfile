@@ -17,8 +17,6 @@ stages {
    }
    }
 
-arn:aws:iam::572411739171:user/rajat.prakash@publicissapient.com
-arn:aws:sns:us-east-1:572411739171:mailNotification
 
 
 // stages
