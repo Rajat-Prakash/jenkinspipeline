@@ -4,7 +4,7 @@ stages {
       stage('Publish SNS') {
          steps {
             echo 'Publishing SNS message to AWS'
-            withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+            withAWS(credentials:'AKIAYKRTF7QR7JTPV3SU') {
                 // do something
                 echo 'SNS running'
             }
