@@ -1,6 +1,36 @@
-pipeline{
-agent any
-stages {
+import groovy.json.JsonOutput
+
+def mapEnvironmentToAWS = [
+    "Team1": [
+        ec2InstanceIds: ['i-someEc2Id-1'], 
+        ],
+    "Team2": [
+        ec2InstanceIds: ['i-someEc2Id-2']
+        ]
+    ],
+
+def getMessage(data, action){
+    def message = data
+    message.put('action',action)
+    return JsonOutput.toJson(message)
+}
+
+pipeline {
+   agent any        
+    parameters {
+        choice(
+            name: 'AWS_ENVIRONMENT', 
+            choices: ['Team1', 'Team2'], 
+            description: 'AWS target environment'
+            )
+        
+        choice(
+            name: 'ACTION', 
+            choices: ['Start', 'Stop'], 
+            description: 'Action to perform'
+            )
+    }
+   stages {
 
       stage('Publish SNS') {
          steps {
@@ -8,45 +38,11 @@ stages {
             withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
                 snsPublish(
                     topicArn:'arn:aws:sns:us-east-1:572411739171:mailNotification',
-                    subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
-                    message: getMessage(params.ACTION )
+                    subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}", 
+                    message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
                     )
-            }
+            }            
          }
       }
    }
-   }
-
-
-
-// stages
-// {
-// stage('Build')
-// {
-// steps{
-// echo "Building the Code.........."
-// bat "mvn clean"
-// }
-// }
-// stage('Test')
-// {
-// steps{
-// echo "Testing the Code.........."
-// bat "mvn test"
-// }
-// }
-// stage('Compile')
-// {
-// steps{
-// echo "Compiling the Project.........."
-// bat "mvn compile"
-// }
-// }
-// stage('Deploy')
-// {
-// steps{
-// echo "Deploying the Project.........."
-// }
-// }
-// }
-// }
+}
