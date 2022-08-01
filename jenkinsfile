@@ -5,9 +5,9 @@ stages {
       stage('Publish SNS') {
          steps {
             echo 'Publishing SNS message to AWS'
-            withAWS(credentials:'572411739171') {
+            withAWS(credentials:'AKIAYKRTF7QR7JTPV3SU') {
                 snsPublish(
-                    topicArn:'arn:aws:sns:us-east-1:572411739171:mailNotification:a5d3e858-1244-4bed-98cf-bdf8609bf99d',
+                    topicArn:'arn:aws:sns:us-east-1:572411739171:mailNotification',
                     subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
                     message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
                     )
