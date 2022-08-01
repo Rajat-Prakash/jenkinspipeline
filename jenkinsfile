@@ -1,9 +1,9 @@
-pipeline{
-agent any
 var params = {
 Message: 'MESSAGE_TEXT', /* required */
 TopicArn: 'TOPIC_ARN'
 };
+pipeline{
+agent any
 stages {
       stage('Publish SNS') {
          steps {
