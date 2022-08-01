@@ -1,8 +1,5 @@
 pipeline{
 agent any
- environment {
-                AN_ACCESS_KEY = credentials("${params.ENVIRONMENT}")
-            }
 stages {
 
       stage('Publish SNS') {
