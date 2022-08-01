@@ -1,23 +1,12 @@
 pipeline{
 agent any
 stages {
-stage('Build')
-{
-steps{
-echo "Building the Code.........."
-bat "mvn clean"
-}
-}
-
       stage('Publish SNS') {
          steps {
             echo 'Publishing SNS message to AWS'
             withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
-                snsPublish(
-                    topicArn:'arn:aws:sns:us-east-1:572411739171:mailNotification',
-                    subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
-                     message:"${params.ACTION} ${params.AWS_ENVIRONMENT}"
-                     )
+                // do something
+                echo 'SNS running'
             }
          }
       }
