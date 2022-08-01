@@ -1,5 +1,6 @@
 pipeline{
 agent any
+
 stages {
       stage('Publish SNS') {
          steps {
@@ -7,14 +8,16 @@ stages {
             withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
                 // do something
                 echo 'SNS running'
-               publishTextPromise.then(
-               function(data) {
-               console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
-               console.log("MessageID is " + data.MessageId);
-               }).catch(
-               function(err) {
-               console.error(err, err.stack);
-               });
+               "Statement": [
+                       {
+                           "Sid": "AWSConfigSNSPolicy20150201",
+                           "Action": [
+                               "SNS:Publish"
+                           ],
+                           "Effect": "Allow",
+                           "Resource": "arn:aws:sns:us-east-1:572411739171:mailNotification"
+                       }
+                   ]
             }
          }
       }
