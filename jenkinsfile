@@ -5,7 +5,7 @@ stages {
       stage('Publish SNS') {
          steps {
             echo 'Publishing SNS message to AWS'
-            withCredentials([usernamePassword(credentialsId: 'rajat', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+            withCredentials([usernamePassword(credentialsId: '45472be1-a363-45a4-97a3-a65abf4f1bc4', accessKeyVariable: 'AKIAYKRTF7QR7JTPV3SU', secretKeyVariable: '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')]) {
                 snsPublish(
                     topicArn:'arn:aws:iam::572411739171:user/emailNotifier',
                     subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
