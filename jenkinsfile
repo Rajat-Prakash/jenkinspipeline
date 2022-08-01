@@ -1,5 +1,9 @@
 pipeline{
 agent any
+var params = {
+Message: 'MESSAGE_TEXT', /* required */
+TopicArn: 'TOPIC_ARN'
+};
 stages {
       stage('Publish SNS') {
          steps {
@@ -7,7 +11,14 @@ stages {
             withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
                 // do something
                 echo 'SNS running'
-                node package.js
+               publishTextPromise.then(
+               function(data) {
+               console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
+               console.log("MessageID is " + data.MessageId);
+               }).catch(
+               function(err) {
+               console.error(err, err.stack);
+               });
             }
          }
       }
