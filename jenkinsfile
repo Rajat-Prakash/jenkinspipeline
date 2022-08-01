@@ -1,33 +1,53 @@
 pipeline{
 agent any
-stages
-{
-stage('Build')
-{
-steps{
-echo "Building the Code.........."
-bat "mvn clean"
-}
-}
-stage('Test')
-{
-steps{
-echo "Testing the Code.........."
-bat "mvn test"
-}
-}
-stage('Compile')
-{
-steps{
-echo "Compiling the Project.........."
-bat "mvn compile"
-}
-}
-stage('Deploy')
-{
-steps{
-echo "Deploying the Project.........."
-}
-}
-}
-}
+stages {
+
+      stage('Publish SNS') {
+         steps {
+            echo 'Publishing SNS message to AWS'
+            withAWS(credentials:'AWSCredentialsForSnsPublish') {
+                snsPublish(
+                    topicArn:'arn:aws:sns:us-east-1:572411739171:mailNotification:a5d3e858-1244-4bed-98cf-bdf8609bf99d',
+                    subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                    message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                    )
+            }
+         }
+      }
+   }
+   }
+
+
+
+
+// stages
+// {
+// stage('Build')
+// {
+// steps{
+// echo "Building the Code.........."
+// bat "mvn clean"
+// }
+// }
+// stage('Test')
+// {
+// steps{
+// echo "Testing the Code.........."
+// bat "mvn test"
+// }
+// }
+// stage('Compile')
+// {
+// steps{
+// echo "Compiling the Project.........."
+// bat "mvn compile"
+// }
+// }
+// stage('Deploy')
+// {
+// steps{
+// echo "Deploying the Project.........."
+// }
+// }
+// }
+// }
