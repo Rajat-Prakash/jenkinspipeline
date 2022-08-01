@@ -7,7 +7,7 @@ stages {
             echo 'Publishing SNS message to AWS'
             withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
                 snsPublish(
-                    topicArn:'arn:aws:iam::572411739171:user/emailNotifier',
+                    topicArn:'arn:aws:sns:us-east-1:572411739171:mailNotification:a5d3e858-1244-4bed-98cf-bdf8609bf99d',
                     subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
                      message:"${params.ACTION} ${params.AWS_ENVIRONMENT}"
                      )
