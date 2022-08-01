@@ -8,23 +8,24 @@ stages {
             withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
                 // do something
                 echo 'SNS running'
-               "Statement": [
-                       {
-                           "Sid": "AWSConfigSNSPolicy20150201",
-                           "Action": [
-                               "SNS:Publish"
-                           ],
-                           "Effect": "Allow",
-                           "Resource": "arn:aws:sns:us-east-1:572411739171:mailNotification"
-                       }
-                   ]
+               try {
+                   const data = await snsClient.send(new PublishCommand({Message: "MESSAGE_TEXT",
+                                                                          TopicArn: "TOPIC_ARN"});
+                   console.log("Success.",  data);
+                   return data; // For unit tests.
+                 } catch (err) {
+                   console.log("Error", err.stack);
+                 }
             }
          }
       }
    }
    }
 
-
+{
+  Message: "MESSAGE_TEXT", // MESSAGE_TEXT
+  TopicArn: "TOPIC_ARN", //TOPIC_ARN
+}
 
 // stages
 // {
