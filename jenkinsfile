@@ -9,10 +9,9 @@ stages {
                 // do something
                 echo 'SNS running'
                try {
-                   const data = await snsClient.send(new PublishCommand({Message: "MESSAGE_TEXT",
+                  await snsClient.send(new PublishCommand({Message: "MESSAGE_TEXT",
                                                                           TopicArn: "TOPIC_ARN"});
-                   console.log("Success.",  data);
-                   return data; // For unit tests.
+                   console.log("Success");
                  } catch (err) {
                    console.log("Error", err.stack);
                  }
@@ -21,11 +20,6 @@ stages {
       }
    }
    }
-
-{
-  Message: "MESSAGE_TEXT", // MESSAGE_TEXT
-  TopicArn: "TOPIC_ARN", //TOPIC_ARN
-}
 
 // stages
 // {
