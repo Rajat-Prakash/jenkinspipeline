@@ -4,10 +4,10 @@ pipeline{
 
 
 //Defining tools needed in Pipeline
-  tools {
-    maven 'maven'
-
-  }
+//   tools {
+//     maven 'maven'
+//
+//   }
 
 //Setting up environment for SonarQube- To be used when PS SonarQube is used
 //   environment{
