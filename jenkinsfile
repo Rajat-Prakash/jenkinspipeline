@@ -9,7 +9,7 @@ stages {
                 // do something
                 echo 'SNS running'
                 //aws sns publish --topic-arn arn:aws:sns:us-east-1:572411739171:mailNotification --message "Hello World!"
-                amazonSNS.publish(arn:aws:sns:us-east-1:572411739171:mailNotification, "Hello World!");
+                amazonSNS.publish("arn:aws:sns:us-east-1:572411739171:mailNotification", "Hello World!")
             }
          }
       }
