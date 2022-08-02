@@ -8,7 +8,7 @@ stages {
             withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
                 // do something
                 echo 'SNS running'
-                aws sns publish --topic-arn arn:aws:sns:us-east-1:572411739171:mailNotification --message "Hello World!"
+                aws sns publish --topic-arn "arn:aws:sns:us-east-1:572411739171:mailNotification" --message "Hello World!"
             }
          }
       }
