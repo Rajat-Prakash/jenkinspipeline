@@ -1,54 +1,209 @@
+#!groovy
 pipeline{
-agent any
+ agent any
 
-stages {
-      stage('Publish SNS') {
-         steps {
-            echo 'Publishing SNS message to AWS'
-            withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
-                // do something
-                echo 'SNS running'
-               try {
-                  await snsClient.send(new PublishCommand({Message: "MESSAGE_TEXT",
-                                                                          TopicArn: "TOPIC_ARN"});
-                   console.log("Success");
-                 } catch (err) {
-                   console.log("Error", err.stack);
-                 }
+
+//Defining tools needed in Pipeline
+  tools {
+    maven 'maven'
+
+  }
+
+//Setting up environment for SonarQube- To be used when PS SonarQube is used
+//   environment{
+//     sonar_token=credentials("sonar_token_product_phase")
+//     dojo_sonar_url= 'https://tools.publicis.sapient.com/sonar'
+//   }
+
+
+//Stages start here
+stages{
+
+        stage('Compile and Clean'){
+            steps{
+                script{
+                       try{
+                            bat "mvn -f pom.xml clean compile"
+                       }
+                       catch(all){
+                            echo "Install stage Failed"
+                                                        echo 'Publishing SNS message to AWS'
+                                                        withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+                                                              snsPublish(
+                                                                    topicArn:'arn:aws:sns:us-west-2:yourAccountId:aws_resource_status_toggle',
+                                                                    subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                                                                    message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                                                              )
+                                                        }
+                       }
+                }
             }
-         }
-      }
-   }
-   }
+        }
 
-// stages
-// {
-// stage('Build')
-// {
-// steps{
-// echo "Building the Code.........."
-// bat "mvn clean"
-// }
-// }
-// stage('Test')
-// {
-// steps{
-// echo "Testing the Code.........."
-// bat "mvn test"
-// }
-// }
-// stage('Compile')
-// {
-// steps{
-// echo "Compiling the Project.........."
-// bat "mvn compile"
-// }
-// }
-// stage('Deploy')
-// {
-// steps{
-// echo "Deploying the Project.........."
-// }
-// }
-// }
-// }
+        stage('Test'){
+              steps{
+                  script{
+                         try{
+                              bat " mvn -f pom.xml test"
+                         }
+                         catch(all){
+                              echo "Install stage Failed"
+                                                          echo 'Publishing SNS message to AWS'
+                                                          withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+                                                                snsPublish(
+                                                                      topicArn:'arn:aws:sns:us-west-2:yourAccountId:aws_resource_status_toggle',
+                                                                      subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                                                                      message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                                                                )
+                                                          }
+                         }
+                  }
+             }
+        }
+
+        stage('Maven Build'){
+            steps{
+                script{
+                       try{
+                            bat "mvn -f pom.xml package"
+                       }
+                       catch(all){
+                            echo "Install stage Failed"
+                                                        echo 'Publishing SNS message to AWS'
+                                                        withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+                                                              snsPublish(
+                                                                    topicArn:'arn:aws:sns:us-west-2:yourAccountId:aws_resource_status_toggle',
+                                                                    subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                                                                    message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                                                              )
+                                                        }
+                       }
+                }
+            }
+        }
+
+        stage('Verify'){
+            steps{
+                script{
+                       try{
+                            bat "mvn -f pom.xml verify"
+                       }
+                       catch(all){
+                            echo "Install stage Failed"
+                                                        echo 'Publishing SNS message to AWS'
+                                                        withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+                                                              snsPublish(
+                                                                    topicArn:'arn:aws:sns:us-west-2:yourAccountId:aws_resource_status_toggle',
+                                                                    subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                                                                    message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                                                              )
+                                                        }
+                       }
+                }
+            }
+        }
+
+
+        stage('Install'){
+            steps{
+                script{
+                       try{
+                            bat "mvn -f pom.xml install"
+                       }
+                       catch(all){
+                            echo "Install stage Failed"
+                            echo 'Publishing SNS message to AWS'
+                            withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+                                  snsPublish(
+                                        topicArn:'arn:aws:sns:us-west-2:yourAccountId:aws_resource_status_toggle',
+                                        subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                                        message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                                  )
+                            }
+                       }
+                }
+            }
+        }
+
+        stage("Test and Jacoco Static analysis"){
+            steps{
+                script{
+                try{
+                                           junit 'target/surefire-reports/*/.xml'
+                                           jacoco()
+                                       }
+                                       catch(all){
+                                           echo "Install stage Failed"
+                                                                       echo 'Publishing SNS message to AWS'
+                                                                       withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+                                                                             snsPublish(
+                                                                                   topicArn:'arn:aws:sns:us-west-2:yourAccountId:aws_resource_status_toggle',
+                                                                                   subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                                                                                   message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                                                                             )
+                                                                       }
+                                       }
+                }
+
+
+            }
+
+        }
+
+        stage('SonarQube Report'){
+            steps{
+
+                withSonarQubeEnv(installationName: 'SonarQube'){
+                    bat './mvnw clean sonar:sonar'
+                }
+//                 "mvn -f server/product-sonar/pom.xml sonar:sonar -Dsonar.projectName=  -Dsonar.projectKey= -Dsonar.host.url= -Dsonar.login="
+            }
+            post{
+                always{
+                    junit allowEmptyResults: true,testResults: '*/test-results/.xml'
+                }
+                failure{
+                    echo "Install stage Failed"
+                                                echo 'Publishing SNS message to AWS'
+                                                withAWS(credentials:'45472be1-a363-45a4-97a3-a65abf4f1bc4') {
+                                                      snsPublish(
+                                                            topicArn:'arn:aws:sns:us-west-2:yourAccountId:aws_resource_status_toggle',
+                                                            subject:"${params.ACTION} ${params.AWS_ENVIRONMENT}",
+                                                            message: getMessage(mapEnvironmentToAWS[params.AWS_ENVIRONMENT], params.ACTION )
+                                                      )
+                                                }
+                }
+            }
+        }
+
+//         stage('Build Docker'){
+//             steps{
+//                 script{
+//                      bat "docker build -f dockerfile -t prodDevMicroService . "
+//                 }
+//             }
+//         }
+//
+//         stage('Push Docker image'){
+//             steps{
+//                 script {
+//                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+//                            myapp.push("latest")
+//                            myapp.push("${env.BUILD_ID}")
+//                        }
+//                 }
+//             }
+//         }
+//
+//         stage('Deployment on Kubernetes'){
+//             steps{
+//                 scripts{
+//                     kubernetesDeploy(configs: "", kubeconfigId: "mykubeConfig")
+//                 }
+//             }
+//         }
+
+  }
+
+
+}
